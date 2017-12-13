@@ -8,6 +8,8 @@ package applesoranges
   - Undesirable to have hardcoded prices
   - etc
   have NOT been taken into account.
+  There could be further steps possible to further separate concerns, however in the spirit of the rule above
+  (and of the TDD spirit, and the time limit) I have not gone into a too deep exploration of these options.
  */
 
 sealed trait ShopItem

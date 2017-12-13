@@ -1,6 +1,6 @@
 package applesoranges
 
-import org.scalatest.{FlatSpec, FunSuiteLike, Matchers}
+import org.scalatest.{FlatSpec, Matchers}
 
 class CheckoutTests extends FlatSpec with Matchers {
 
