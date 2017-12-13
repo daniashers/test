@@ -14,8 +14,26 @@ sealed trait ShopItem
 case object Apple extends ShopItem
 case object Orange extends ShopItem
 
+sealed trait CheckoutEvent
+final case class ShopItemAdded(item: ShopItem, price: BigDecimal) extends CheckoutEvent
+final case class DiscountApplied(description: String, amount: BigDecimal) extends CheckoutEvent
+
 class Checkout(resolvePrice: ShopItem => BigDecimal = Checkout.DefaultPriceList) {
-  def total(items: Seq[ShopItem]): BigDecimal = items.map(resolvePrice(_)).sum
+  def total(items: Seq[ShopItem], applyDiscounts: Boolean = true): BigDecimal = {
+
+    val addedItems = items.map(item => ShopItemAdded(item, resolvePrice(item)))
+    val discounts = if (!applyDiscounts) Nil else {
+      List.fill(items.count(_ == Apple) / 2)(DiscountApplied("BOGOF on apples", resolvePrice(Apple))) ++
+      List.fill(items.count(_ == Orange) / 3)(DiscountApplied("3 for 2 on oranges", resolvePrice(Orange)))
+    }
+
+    eventTotal(addedItems ++ discounts)
+  }
+
+  private def eventTotal(checkoutItems: Seq[CheckoutEvent]): BigDecimal = checkoutItems.map {
+    case ShopItemAdded(_, price) => price
+    case DiscountApplied(_, amount) => -amount
+  }.sum
 }
 
 object Checkout {
